@@ -189,7 +189,14 @@ EOF
 aws iam create-role \
   --role-name "$ROLE_NAME" \
   --assume-role-policy-document file:///tmp/trust-policy.json
+
+
+aws iam get-role \
+  --role-name "$ROLE_NAME" \
+  --query 'Role.AssumeRolePolicyDocument' \
+  --output json
 ```
+
 
 ECR policies
 ```sh
