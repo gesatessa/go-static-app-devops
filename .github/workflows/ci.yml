@@ -10,9 +10,10 @@ env:
   AWS_REGION: us-east-1
   AWS_ACCOUNT_ID: 865274826587
   ECR_REPO_NAME: go-static-app
-  ECR_REPOSITORY: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}
+  # ECR_REPOSITORY: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}
   IMAGE_TAG: v1
-  GHA_ECR_ROLE_ARN: arn:aws:iam::${AWS_ACCOUNT_ID}:role/gha-ecr-role
+  GHA_ECR_ROLE_NAME: gha-ecr-role
+
 
 jobs:
   test-and-analyze:
@@ -53,7 +54,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:$IMAGE_TAG .
   docker-push:
     name: Push Docker image to ECR
     runs-on: ubuntu-latest
@@ -79,12 +80,12 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: ${{ env.GHA_ECR_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.GHA_ECR_ROLE_NAME }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push Docker image
         run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:$IMAGE_TAG .
+          docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}:$IMAGE_TAG
