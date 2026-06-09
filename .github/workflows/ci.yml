@@ -8,8 +8,11 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: 865274826587.dkr.ecr.us-east-1.amazonaws.com/go-static-app
+  AWS_ACCOUNT_ID: 865274826587
+  ECR_REPO_NAME: go-static-app
+  ECR_REPOSITORY: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}
   IMAGE_TAG: v1
+  GHA_ECR_ROLE_ARN: arn:aws:iam::${AWS_ACCOUNT_ID}:role/gha-ecr-role
 
 jobs:
   test-and-analyze:
@@ -76,7 +79,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::865274826587:role/github-actions-ecr-role
+          role-to-assume: ${{ env.GHA_ECR_ROLE_ARN }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2

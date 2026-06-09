@@ -195,6 +195,10 @@ aws iam get-role \
   --role-name "$ROLE_NAME" \
   --query 'Role.AssumeRolePolicyDocument' \
   --output json
+
+aws iam update-assume-role-policy \
+  --role-name $ROLE_NAME \
+  --policy-document file:///tmp/trust-policy.json
 ```
 
 
