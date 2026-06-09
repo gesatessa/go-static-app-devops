@@ -1,0 +1,6 @@
+apiVersion: v2
+name: go-web-app
+description: Go web app with Envoy Gateway HTTPRoute
+type: application
+version: 0.1.0
+appVersion: "v1"

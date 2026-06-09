@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: 865274826587.dkr.ecr.us-east-1.amazonaws.com/go-static-app
+  tag: v1
+  pullPolicy: IfNotPresent
+
+app:
+  containerPort: 8080
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8080
+
+gateway:
+  enabled: true
+  name: eg
+  className: eg
+  listenerPort: 80
+
+gatewayClass:
+  enabled: true
+  name: eg
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+
+httpRoute:
+  enabled: true
+  name: backend
+  hostname: www.myapp.io
+  path: /
