@@ -205,4 +205,39 @@ aws iam update-assume-role-policy \
 ECR policies
 ```sh
 
+# generate ECR policy file
+cat > /tmp/ecr-policy.json <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRAuth",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PushPullImage",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:CompleteLayerUpload",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart",
+        "ecr:BatchGetImage"
+      ],
+      "Resource": "arn:aws:ecr:${AWS_REGION}:${AWS_ACCOUNT_ID}:repository/${ECR_REPO_NAME}"
+    }
+  ]
+}
+EOF
+
+aws iam create-policy-version \
+  --policy-arn arn:aws:iam::865274826587:policy/GitHubActionsECRPushPolicy \
+  --policy-document file:///tmp/ecr-policy.json \
+  --set-as-default
+
 ```
