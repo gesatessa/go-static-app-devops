@@ -107,6 +107,8 @@ k get svc -n envoy-gateway-system
 H_=ad12e90dff4794ea68a64ac9ab6081d8-1861919842.us-east-1.elb.amazonaws.com
 curl -v --headers "Host: www.myapp.io" $H_
 curl -i -H "Host: www.myapp.io" $H_/courses
+
+#/etc/hosts (ip h)
 ```
 To delete the resources
 
@@ -153,14 +155,13 @@ export AWS_REGION=us-east-1
 
 export GH_USER=gesatessa
 export GH_REPO_NAME=go-static-app-devops
-export ROLE_NAME=github-actions-ecr-role
+export ROLE_NAME=gha-ecr-role
 export ECR_REPO_NAME=go-static-app
 
 
 ```
 
 ```sh
-
 cat > /tmp/trust-policy.json <<EOF
 {
   "Version": "2012-10-17",
@@ -186,6 +187,11 @@ EOF
 
 # create role
 aws iam create-role \
-  --role-name ${ROLE_NAME} \
-  --assume-role-policy-document /tmp/file://trust-policy.json
+  --role-name "$ROLE_NAME" \
+  --assume-role-policy-document file:///tmp/trust-policy.json
+```
+
+ECR policies
+```sh
+
 ```
