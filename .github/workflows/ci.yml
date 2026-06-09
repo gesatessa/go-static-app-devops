@@ -66,7 +66,7 @@ jobs:
 
     permissions:
       id-token: write
-      contents: read
+      contents: write
 
     env:
       IMAGE_TAG: ${{ github.sha }}
@@ -89,7 +89,17 @@ jobs:
           IMAGE_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}"
           IMAGE_URI="${IMAGE_REPO}:${IMAGE_TAG}"
 
-          docker build -t "$IMAGE_URI" -t "${IMAGE_REPO}:latest" .
-
+          docker build -t "$IMAGE_URI" .
           docker push "$IMAGE_URI"
-          docker push "${IMAGE_REPO}:latest"
+          
+      - name: Update Helm image tag
+        run: |
+          sed -i "s/tag: .*/tag: \"${IMAGE_TAG}\"/" helm/go-web-app/values-prod.yaml
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add helm/go-web-app/values-prod.yaml
+          git commit -m "Deploy image ${IMAGE_TAG}" || echo "No changes to commit"
+          git push origin main
+          

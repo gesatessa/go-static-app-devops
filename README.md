@@ -241,3 +241,35 @@ aws iam create-policy-version \
   --set-as-default
 
 ```
+
+```sh
+
+NEW_TAG=latest
+helm upgrade --install web helm/go-web-app \
+  --set image.tag=$NEW_TAG
+
+```
+
+## ArgoCD
+
+```sh
+# mkdir -p helm/go-web-app
+cat > helm/go-web-app/values-prod.yaml <<'EOF'
+image:
+  tag: ""
+EOF
+```
+
+```sh
+kubectl create namespace argocd
+
+kubectl apply -n argocd --server-side --force-conflicts \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+create argo cd application
+
+```sh
+mkdir -p argocd
+nano argocd/go-web-app.yml
+```
