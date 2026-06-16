@@ -79,9 +79,8 @@ k apply -f k8s/
 
 eksctl scale nodegroup \
   --cluster $CLUSTER_NAME \
-  --name ng-2d85f854 \
-  --nodes 2 \
-  --nodes-max 2
+  --name $NG \
+  --nodes 2
 ```
 
 
@@ -272,4 +271,26 @@ create argo cd application
 ```sh
 mkdir -p argocd
 nano argocd/go-web-app.yml
+
+kubectl apply -f argocd/go-web-app.yml
+
+kubectl -n argocd patch secret argocd-secret \
+  -p "{\"stringData\":{\"server.secretkey\":\"$(openssl rand -base64 32)\"}}"
+```
+
+
+```sh
+kubectl get applications -n argocd
+# NAME         SYNC STATUS   HEALTH STATUS
+# go-web-app   Synced        Healthy
+```
+
+
+```sh
+kubectl port-forward svc/argocd-server -n argocd 8080:443 --address=0.0.0.0
+
+# get the admin password
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+echo
 ```
